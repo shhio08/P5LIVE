@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>P5LIVE Simple</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5.live@0.0.1/p5.live.js"></script>
+    <script src="camera.js"></script>
+    <script src="grid.js"></script>
+    <script src="cube.js"></script>
+    <script src="redCube.js"></script>
+    <script src="hexagon.js"></script>
+    <script src="aurora.js"></script>
+    <script src="sketch.js"></script>
+  </head>
+  <body>
+    <!-- コード表示パネル -->
+    <div id="code-panel" class="code-panel">
+      <pre id="code-display"></pre>
+    </div>
+
+    <!-- 表示/非表示切り替えボタン -->
+    <button id="toggle-code" onclick="toggleCodePanel()">Toggle Code</button>
+
+    <!-- p5.jsのキャンバス -->
+    <div id="p5-container"></div>
+
+    <script>
+      // WebSocket接続
+      const socket = new WebSocket("ws://localhost:3000");
+
+      // コードパネルの表示/非表示
+      function toggleCodePanel() {
+        const panel = document.getElementById("code-panel");
+        panel.style.display = panel.style.display === "none" ? "block" : "none";
+      }
+
+      // WebSocketからのメッセージ受信
+      socket.onmessage = function (event) {
+        const data = JSON.parse(event.data);
+        if (data.type === "code-update") {
+          // コード表示の更新
+          document.getElementById("code-display").textContent = data.code;
+
+          // p5.jsの更新
+          try {
+            // 既存のp5インスタンスを削除
+            if (window.p5Instance) {
+              window.p5Instance.remove();
+            }
+
+            // 新しいコードを実行
+            const newScript = document.createElement("script");
+            newScript.textContent = data.code;
+            document.body.appendChild(newScript);
+          } catch (e) {
+            console.error("Code update error:", e);
+          }
+        }
+      };
+
+      // 接続エラー処理
+      socket.onerror = function (error) {
+        console.error("WebSocket error:", error);
+      };
+
+      // 接続切断時の処理
+      socket.onclose = function () {
+        console.log("WebSocket connection closed");
+      };
+    </script>
+  </body>
+</html>

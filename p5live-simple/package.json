@@ -1,0 +1,14 @@
+{
+	"name": "p5live-simple",
+	"version": "1.0.0",
+	"description": "Simple P5LIVE implementation",
+	"main": "server.js",
+	"scripts": {
+		"start": "node server.js"
+	},
+	"dependencies": {
+		"express": "^4.17.1",
+		"ws": "^8.2.3",
+		"chokidar": "^3.5.3"
+	}
+}
